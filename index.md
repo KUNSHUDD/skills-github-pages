@@ -1,3 +1,104 @@
----
-title: Welcome to my blog!
----
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CDK验证小游戏</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        #game-container { display: none; margin: 20px auto; width: 300px; }
+        #cdk-input { padding: 10px; width: 200px; }
+        button { padding: 10px 20px; cursor: pointer; }
+        canvas { border: 1px solid #000; }
+    </style>
+</head>
+<body>
+    <h1>欢迎来到小游戏</h1>
+    <div id="auth-container">
+        <p>请输入CDK兑换码:</p>
+        <input type="text" id="cdk-input" placeholder="输入CDK...">
+        <button onclick="verifyCDK()">验证</button>
+        <p id="error-message" style="color: red;"></p>
+    </div>
+    
+    <div id="game-container">
+        <canvas id="game-canvas" width="300" height="300"></canvas>
+        <p>剩余时间: <span id="time-left">60</span>秒</p>
+        <p>得分: <span id="score">0</span></p>
+    </div>
+
+    <script>
+        // CDK验证
+        async function verifyCDK() {
+            const cdk = document.getElementById('cdk-input').value;
+            const errorMsg = document.getElementById('error-message');
+            
+            try {
+                const response = await fetch('/verify-cdk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cdk })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('game-container').style.display = 'block';
+                    initGame();
+                } else {
+                    errorMsg.textContent = result.message || 'CDK无效';
+                }
+            } catch (error) {
+                errorMsg.textContent = '验证失败，请重试';
+            }
+        }
+
+        // 简单游戏示例 (点击小方块得分)
+        function initGame() {
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+            let score = 0;
+            let timeLeft = 60;
+            let gameInterval;
+            
+            // 绘制目标方块
+            function drawTarget() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const size = 30;
+                const x = Math.random() * (canvas.width - size);
+                const y = Math.random() * (canvas.height - size);
+                
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(x, y, size, size);
+                
+                canvas.onclick = function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const clickY = e.clientY - rect.top;
+                    
+                    if (clickX > x && clickX < x + size && 
+                        clickY > y && clickY < y + size) {
+                        score++;
+                        document.getElementById('score').textContent = score;
+                        drawTarget();
+                    }
+                };
+            }
+            
+            // 游戏计时
+            function updateTimer() {
+                timeLeft--;
+                document.getElementById('time-left').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval);
+                    alert(`游戏结束! 你的得分: ${score}`);
+                    // 可以在这里发送分数到后端
+                }
+            }
+            
+            drawTarget();
+            gameInterval = setInterval(updateTimer, 1000);
+        }
+    </script>
+</body>
+</html>
