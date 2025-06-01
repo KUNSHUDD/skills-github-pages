@@ -1,0 +1,23 @@
+name: 新建CDK
+description: 生成新的网站访问CDK
+title: "[CDK] 新兑换码请求"
+labels: ["cdk"]
+body:
+  - type: textarea
+    id: websites
+    attributes:
+      label: "可访问的网站"
+      description: "每行一个网站，格式：URL,网站名称"
+      placeholder: |
+        https://example.com/game1,游戏1
+        https://example.com/game2,游戏2
+  - type: input
+    id: count
+    attributes:
+      label: "生成数量"
+      default: "1"
+  - type: input
+    id: prefix
+    attributes:
+      label: "CDK前缀"
+      default: "GAME-"
