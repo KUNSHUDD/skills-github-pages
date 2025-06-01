@@ -1,103 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>CDK验证小游戏</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网站访问兑换中心</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        #game-container { display: none; margin: 20px auto; width: 300px; }
-        #cdk-input { padding: 10px; width: 200px; }
-        button { padding: 10px 20px; cursor: pointer; }
-        canvas { border: 1px solid #000; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .steam-style {
+            background: linear-gradient(135deg, #1a2838 0%, #235784 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #websites {
+            display: none;
+            margin-top: 20px;
+        }
+        .website-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: white;
+        }
+        .error {
+            color: #f44336;
+        }
+        .success {
+            color: #4CAF50;
+        }
     </style>
 </head>
 <body>
-    <h1>欢迎来到小游戏</h1>
-    <div id="auth-container">
-        <p>请输入CDK兑换码:</p>
-        <input type="text" id="cdk-input" placeholder="输入CDK...">
-        <button onclick="verifyCDK()">验证</button>
-        <p id="error-message" style="color: red;"></p>
-    </div>
-    
-    <div id="game-container">
-        <canvas id="game-canvas" width="300" height="300"></canvas>
-        <p>剩余时间: <span id="time-left">60</span>秒</p>
-        <p>得分: <span id="score">0</span></p>
+    <div class="container">
+        <div class="steam-style">
+            <h1>网站访问兑换中心</h1>
+            <p>输入您的CDK兑换码以访问专属内容</p>
+        </div>
+        
+        <div id="redeem-section">
+            <h2>兑换CDK</h2>
+            <input type="text" id="cdk-input" placeholder="输入CDK兑换码">
+            <button onclick="redeemCDK()">兑换</button>
+            <p id="message"></p>
+        </div>
+        
+        <div id="websites">
+            <h2>您的可访问网站</h2>
+            <div id="website-list"></div>
+        </div>
     </div>
 
     <script>
-        // CDK验证
-        async function verifyCDK() {
-            const cdk = document.getElementById('cdk-input').value;
-            const errorMsg = document.getElementById('error-message');
+        // 模拟数据库 - 实际应该使用GitHub API检查
+        const validWebsites = {
+            "GAME-1234": ["https://example.com/game1", "游戏1"],
+            "GAME-ABCD": ["https://example.com/game2", "游戏2"],
+            "VIP-2023": ["https://example.com/vip", "VIP专区"],
+            "MULTI-001": [
+                ["https://site1.example.com", "网站1"],
+                ["https://site2.example.com", "网站2"]
+            ]
+        };
+
+        // 存储已兑换的CDK
+        let redeemedCDKs = JSON.parse(localStorage.getItem('redeemedCDKs') || [];
+        
+        function redeemCDK() {
+            const cdk = document.getElementById('cdk-input').value.trim();
+            const messageEl = document.getElementById('message');
             
-            try {
-                const response = await fetch('/verify-cdk', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cdk })
-                });
+            if (!cdk) {
+                messageEl.textContent = "请输入CDK兑换码";
+                messageEl.className = "error";
+                return;
+            }
+            
+            // 检查是否已兑换
+            if (redeemedCDKs.includes(cdk)) {
+                messageEl.textContent = "该CDK已兑换过";
+                messageEl.className = "error";
+                return;
+            }
+            
+            // 检查CDK有效性
+            if (validWebsites[cdk]) {
+                redeemedCDKs.push(cdk);
+                localStorage.setItem('redeemedCDKs', JSON.stringify(redeemedCDKs));
+                messageEl.textContent = "兑换成功！";
+                messageEl.className = "success";
                 
-                const result = await response.json();
-                
-                if (result.success) {
-                    document.getElementById('auth-container').style.display = 'none';
-                    document.getElementById('game-container').style.display = 'block';
-                    initGame();
-                } else {
-                    errorMsg.textContent = result.message || 'CDK无效';
-                }
-            } catch (error) {
-                errorMsg.textContent = '验证失败，请重试';
+                // 显示可访问的网站
+                showWebsites();
+            } else {
+                messageEl.textContent = "无效的CDK兑换码";
+                messageEl.className = "error";
             }
         }
-
-        // 简单游戏示例 (点击小方块得分)
-        function initGame() {
-            const canvas = document.getElementById('game-canvas');
-            const ctx = canvas.getContext('2d');
-            let score = 0;
-            let timeLeft = 60;
-            let gameInterval;
+        
+        function showWebsites() {
+            const websiteListEl = document.getElementById('website-list');
+            const websitesSection = document.getElementById('websites');
             
-            // 绘制目标方块
-            function drawTarget() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const size = 30;
-                const x = Math.random() * (canvas.width - size);
-                const y = Math.random() * (canvas.height - size);
-                
-                ctx.fillStyle = 'blue';
-                ctx.fillRect(x, y, size, size);
-                
-                canvas.onclick = function(e) {
-                    const rect = canvas.getBoundingClientRect();
-                    const clickX = e.clientX - rect.left;
-                    const clickY = e.clientY - rect.top;
-                    
-                    if (clickX > x && clickX < x + size && 
-                        clickY > y && clickY < y + size) {
-                        score++;
-                        document.getElementById('score').textContent = score;
-                        drawTarget();
-                    }
-                };
-            }
+            websiteListEl.innerHTML = '';
+            websitesSection.style.display = 'block';
             
-            // 游戏计时
-            function updateTimer() {
-                timeLeft--;
-                document.getElementById('time-left').textContent = timeLeft;
+            redeemedCDKs.forEach(cdk => {
+                const websites = validWebsites[cdk];
                 
-                if (timeLeft <= 0) {
-                    clearInterval(gameInterval);
-                    alert(`游戏结束! 你的得分: ${score}`);
-                    // 可以在这里发送分数到后端
+                if (Array.isArray(websites[0])) {
+                    // 多个网站
+                    websites.forEach(web => {
+                        addWebsiteCard(web[0], web[1]);
+                    });
+                } else {
+                    // 单个网站
+                    addWebsiteCard(websites[0], websites[1]);
                 }
-            }
-            
-            drawTarget();
-            gameInterval = setInterval(updateTimer, 1000);
+            });
+        }
+        
+        function addWebsiteCard(url, name) {
+            const websiteListEl = document.getElementById('website-list');
+            const card = document.createElement('div');
+            card.className = 'website-card';
+            card.innerHTML = `
+                <h3>${name}</h3>
+                <a href="${url}" target="_blank">访问网站</a>
+            `;
+            websiteListEl.appendChild(card);
+        }
+        
+        // 页面加载时检查已有兑换
+        if (redeemedCDKs.length > 0) {
+            showWebsites();
         }
     </script>
 </body>
