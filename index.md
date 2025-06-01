@@ -23,12 +23,17 @@
             color: white;
             padding: 20px;
             border-radius: 5px;
+            margin-bottom: 20px;
         }
         input, button {
             padding: 10px;
             margin: 5px 0;
             border-radius: 3px;
             border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        input {
+            width: 300px;
         }
         button {
             background: #4CAF50;
@@ -50,12 +55,36 @@
             margin: 10px 0;
             border-radius: 5px;
             background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .website-info {
+            flex-grow: 1;
         }
         .error {
             color: #f44336;
         }
         .success {
             color: #4CAF50;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.3);
+            border-radius: 50%;
+            border-top-color: #000;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #cdk-history {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
         }
     </style>
 </head>
@@ -68,8 +97,11 @@
         
         <div id="redeem-section">
             <h2>兑换CDK</h2>
-            <input type="text" id="cdk-input" placeholder="输入CDK兑换码">
-            <button onclick="redeemCDK()">兑换</button>
+            <div>
+                <input type="text" id="cdk-input" placeholder="输入CDK兑换码 (如 GAME-ABC123)">
+                <button onclick="redeemCDK()" id="redeem-btn">兑换</button>
+                <span id="loading" class="loading" style="display:none;"></span>
+            </div>
             <p id="message"></p>
         </div>
         
@@ -77,91 +109,237 @@
             <h2>您的可访问网站</h2>
             <div id="website-list"></div>
         </div>
+        
+        <div id="cdk-history">
+            <h3>兑换历史</h3>
+            <div id="history-list"></div>
+        </div>
     </div>
 
     <script>
-        // 模拟数据库 - 实际应该使用GitHub API检查
-        const validWebsites = {
-            "GAME-1234": ["https://example.com/game1", "游戏1"],
-            "GAME-ABCD": ["https://example.com/game2", "游戏2"],
-            "VIP-2023": ["https://example.com/vip", "VIP专区"],
-            "MULTI-001": [
-                ["https://site1.example.com", "网站1"],
-                ["https://site2.example.com", "网站2"]
-            ]
-        };
-
-        // 存储已兑换的CDK
-        let redeemedCDKs = JSON.parse(localStorage.getItem('redeemedCDKs') || [];
+        // GitHub仓库信息 - 修改为你自己的
+        const repoOwner = "yourusername";
+        const repoName = "cdk-gateway";
+        const cdkLabel = "cdk";
         
-        function redeemCDK() {
-            const cdk = document.getElementById('cdk-input').value.trim();
+        // 从本地存储加载已兑换CDK和网站
+        let redeemedCDKs = JSON.parse(localStorage.getItem('redeemedCDKs') || [];
+        let accessibleWebsites = JSON.parse(localStorage.getItem('accessibleWebsites') || [];
+        
+        // 页面加载时显示已有内容
+        document.addEventListener('DOMContentLoaded', () => {
+            if (redeemedCDKs.length > 0) {
+                showWebsites();
+                showHistory();
+            }
+        });
+        
+        // 兑换CDK主函数
+        async function redeemCDK() {
+            const cdk = document.getElementById('cdk-input').value.trim().toUpperCase();
             const messageEl = document.getElementById('message');
+            const redeemBtn = document.getElementById('redeem-btn');
+            const loadingEl = document.getElementById('loading');
             
+            // 验证输入
             if (!cdk) {
-                messageEl.textContent = "请输入CDK兑换码";
-                messageEl.className = "error";
+                showMessage("请输入CDK兑换码", "error");
                 return;
             }
             
             // 检查是否已兑换
-            if (redeemedCDKs.includes(cdk)) {
-                messageEl.textContent = "该CDK已兑换过";
-                messageEl.className = "error";
+            if (redeemedCDKs.some(item => item.cdk === cdk)) {
+                showMessage("该CDK已兑换过", "error");
                 return;
             }
             
-            // 检查CDK有效性
-            if (validWebsites[cdk]) {
-                redeemedCDKs.push(cdk);
-                localStorage.setItem('redeemedCDKs', JSON.stringify(redeemedCDKs));
-                messageEl.textContent = "兑换成功！";
-                messageEl.className = "success";
+            // 开始验证
+            redeemBtn.disabled = true;
+            loadingEl.style.display = "inline-block";
+            showMessage("正在验证CDK...", "");
+            
+            try {
+                // 1. 获取所有CDK Issue
+                const issues = await fetchGitHubIssues();
                 
-                // 显示可访问的网站
-                showWebsites();
-            } else {
-                messageEl.textContent = "无效的CDK兑换码";
-                messageEl.className = "error";
+                // 2. 在Issue评论中查找CDK
+                const cdkInfo = await findCDKInIssues(cdk, issues);
+                
+                if (cdkInfo) {
+                    // 3. 验证成功
+                    await handleValidCDK(cdk, cdkInfo.websites);
+                    showMessage("兑换成功！", "success");
+                    
+                    // 4. 显示可访问网站
+                    showWebsites();
+                    showHistory();
+                } else {
+                    showMessage("无效的CDK兑换码", "error");
+                }
+            } catch (error) {
+                console.error("CDK验证失败:", error);
+                showMessage("验证失败，请稍后重试", "error");
+            } finally {
+                redeemBtn.disabled = false;
+                loadingEl.style.display = "none";
+                document.getElementById('cdk-input').value = "";
             }
         }
         
+        // 从GitHub获取所有CDK Issue
+        async function fetchGitHubIssues() {
+            try {
+                const response = await fetch(
+                    `https://api.github.com/repos/${repoOwner}/${repoName}/issues?labels=${cdkLabel}`
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API请求失败: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error("获取GitHub Issues失败:", error);
+                throw error;
+            }
+        }
+        
+        // 在Issue评论中查找CDK
+        async function findCDKInIssues(cdk, issues) {
+            for (const issue of issues) {
+                try {
+                    const comments = await fetchComments(issue.comments_url);
+                    
+                    for (const comment of comments) {
+                        // 检查评论中是否包含CDK
+                        if (comment.body && comment.body.includes(cdk)) {
+                            // 提取网站信息
+                            const websites = extractWebsitesFromComment(comment.body);
+                            if (websites.length > 0) {
+                                return { cdk, websites, issue };
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error(`处理Issue #${issue.number}失败:`, error);
+                }
+            }
+            return null;
+        }
+        
+        // 获取Issue评论
+        async function fetchComments(commentsUrl) {
+            const response = await fetch(commentsUrl);
+            if (!response.ok) {
+                throw new Error(`获取评论失败: ${response.status}`);
+            }
+            return await response.json();
+        }
+        
+        // 从评论中提取网站信息
+        function extractWebsitesFromComment(commentBody) {
+            const websites = [];
+            
+            // 尝试从标准格式中提取
+            const sitesSection = commentBody.split('可访问网站:')[1] || 
+                               commentBody.split('Accessible websites:')[1];
+            
+            if (sitesSection) {
+                const sitesText = sitesSection.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line && !line.startsWith('```'));
+                
+                for (const line of sitesText) {
+                    const parts = line.split(',');
+                    if (parts.length >= 1) {
+                        const url = parts[0].trim();
+                        const name = parts[1]?.trim() || url;
+                        websites.push({ url, name });
+                    }
+                }
+            }
+            
+            return websites;
+        }
+        
+        // 处理有效CDK
+        async function handleValidCDK(cdk, websites) {
+            // 添加到本地存储
+            redeemedCDKs.push({ 
+                cdk, 
+                date: new Date().toLocaleString(),
+                websites: websites.map(w => w.url)
+            });
+            
+            // 合并网站列表，去重
+            const newWebsites = [...accessibleWebsites];
+            websites.forEach(website => {
+                if (!newWebsites.some(w => w.url === website.url)) {
+                    newWebsites.push(website);
+                }
+            });
+            
+            // 保存到本地存储
+            localStorage.setItem('redeemedCDKs', JSON.stringify(redeemedCDKs));
+            localStorage.setItem('accessibleWebsites', JSON.stringify(newWebsites));
+            accessibleWebsites = newWebsites;
+        }
+        
+        // 显示可访问网站
         function showWebsites() {
             const websiteListEl = document.getElementById('website-list');
             const websitesSection = document.getElementById('websites');
             
             websiteListEl.innerHTML = '';
+            
+            if (accessibleWebsites.length === 0) {
+                websitesSection.style.display = 'none';
+                return;
+            }
+            
             websitesSection.style.display = 'block';
             
-            redeemedCDKs.forEach(cdk => {
-                const websites = validWebsites[cdk];
-                
-                if (Array.isArray(websites[0])) {
-                    // 多个网站
-                    websites.forEach(web => {
-                        addWebsiteCard(web[0], web[1]);
-                    });
-                } else {
-                    // 单个网站
-                    addWebsiteCard(websites[0], websites[1]);
-                }
+            accessibleWebsites.forEach(website => {
+                const card = document.createElement('div');
+                card.className = 'website-card';
+                card.innerHTML = `
+                    <div class="website-info">
+                        <h3>${website.name}</h3>
+                        <small>${website.url}</small>
+                    </div>
+                    <a href="${website.url}" target="_blank">
+                        <button>访问</button>
+                    </a>
+                `;
+                websiteListEl.appendChild(card);
             });
         }
         
-        function addWebsiteCard(url, name) {
-            const websiteListEl = document.getElementById('website-list');
-            const card = document.createElement('div');
-            card.className = 'website-card';
-            card.innerHTML = `
-                <h3>${name}</h3>
-                <a href="${url}" target="_blank">访问网站</a>
-            `;
-            websiteListEl.appendChild(card);
+        // 显示兑换历史
+        function showHistory() {
+            const historyListEl = document.getElementById('history-list');
+            
+            if (redeemedCDKs.length === 0) {
+                historyListEl.innerHTML = "<p>暂无兑换历史</p>";
+                return;
+            }
+            
+            historyListEl.innerHTML = redeemedCDKs.map(cdk => `
+                <div class="website-card">
+                    <div>
+                        <strong>${cdk.cdk}</strong>
+                        <div><small>兑换时间: ${cdk.date}</small></div>
+                        <div><small>解锁网站: ${cdk.websites.length}个</small></div>
+                    </div>
+                </div>
+            `).join('');
         }
         
-        // 页面加载时检查已有兑换
-        if (redeemedCDKs.length > 0) {
-            showWebsites();
+        // 显示消息
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = type;
         }
     </script>
 </body>
