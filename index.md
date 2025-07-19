@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KUNSHU 卡密管理系统</title>
+    <title>Roblox礼品卡兑换中心</title>
     <style>
         :root {
-            --primary: #6c5ce7;
-            --secondary: #a29bfe;
-            --dark: #2d3436;
-            --light: #f5f6fa;
-            --success: #00b894;
-            --danger: #d63031;
+            --primary: #00a2ff;
+            --secondary: #007acc;
+            --dark: #1a1a1a;
+            --light: #f0f0f0;
+            --success: #00c853;
+            --danger: #ff3d00;
+            --warning: #ffab00;
         }
         
         * {
@@ -22,57 +23,91 @@
         }
         
         body {
-            background: linear-gradient(135deg, #2d3436, #000000);
-            color: var(--light);
+            background-color: #121212;
+            color: white;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(0, 162, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 122, 204, 0.1) 0%, transparent 50%);
             overflow-x: hidden;
         }
         
         .container {
-            width: 90%;
             max-width: 1200px;
-            background: rgba(45, 52, 54, 0.8);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
+            margin: 0 auto;
+            padding: 20px;
         }
         
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(108, 92, 231, 0.1), transparent 70%);
-            animation: rotate 20s linear infinite;
-            z-index: -1;
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
         }
         
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        h1, h2, h3 {
-            color: var(--light);
-            text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo::before {
+            content: "🎁";
+            margin-right: 10px;
+            font-size: 32px;
+        }
+        
+        .admin-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .admin-btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card {
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }
+        
+        .card-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title::before {
+            content: "✨";
+            margin-right: 10px;
         }
         
         .form-group {
@@ -85,70 +120,150 @@
             font-weight: 500;
         }
         
-        input, select, button {
+        input, select {
             width: 100%;
             padding: 12px 15px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--light);
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: white;
             font-size: 16px;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
         
         input:focus, select:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 0 2px var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 162, 255, 0.3);
         }
         
-        button {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+        .btn {
+            background-color: var(--primary);
             color: white;
-            font-weight: bold;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
         }
         
-        button:hover {
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
-        button:active {
-            transform: translateY(0);
+        .btn-success {
+            background-color: var(--success);
         }
         
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
+        .btn-danger {
+            background-color: var(--danger);
         }
         
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .hidden {
-            display: none;
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
         }
         
         .result {
             margin-top: 20px;
             padding: 15px;
-            border-radius: 10px;
-            background: rgba(0, 184, 148, 0.1);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+        
+        .success {
+            background-color: rgba(0, 200, 83, 0.2);
             border-left: 4px solid var(--success);
-            word-break: break-all;
+            display: block;
         }
         
         .error {
-            background: rgba(214, 48, 49, 0.1);
+            background-color: rgba(255, 61, 0, 0.2);
             border-left: 4px solid var(--danger);
+            display: block;
+        }
+        
+        .info {
+            background-color: rgba(0, 162, 255, 0.2);
+            border-left: 4px solid var(--primary);
+            display: block;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transform: translateY(-50px);
+            transition: all 0.3s;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
         }
         
         .tabs {
@@ -160,29 +275,22 @@
         .tab {
             padding: 10px 20px;
             cursor: pointer;
-            position: relative;
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
-        
-        .tab:hover {
-            opacity: 1;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
         }
         
         .tab.active {
-            opacity: 1;
+            border-bottom-color: var(--primary);
             color: var(--primary);
+            font-weight: bold;
         }
         
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            border-radius: 3px 3px 0 0;
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         table {
@@ -198,284 +306,266 @@
         }
         
         th {
-            background: rgba(108, 92, 231, 0.2);
-            font-weight: 500;
+            background-color: rgba(0, 162, 255, 0.2);
+            color: var(--primary);
         }
         
         tr:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
-        .robox-login {
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .badge-success {
+            background-color: rgba(0, 200, 83, 0.2);
+            color: var(--success);
+        }
+        
+        .badge-danger {
+            background-color: rgba(255, 61, 0, 0.2);
+            color: var(--danger);
+        }
+        
+        .badge-warning {
+            background-color: rgba(255, 171, 0, 0.2);
+            color: var(--warning);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .roblox-login {
+            background-color: #212121;
+            border-radius: 8px;
+            padding: 30px;
             max-width: 400px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
-        .robox-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(to right, #ff4757, #eccc68, #2ed573, #1e90ff);
-        }
-        
-        .robox-logo {
+        .roblox-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
-        .robox-logo img {
-            width: 150px;
-            height: auto;
-        }
-        
-        .glow {
-            animation: glow 2s infinite alternate;
-        }
-        
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
-            }
-            to {
-                box-shadow: 0 0 20px rgba(108, 92, 231, 0.8);
-            }
-        }
-        
-        .admin-panel {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-        
-        .admin-btn {
-            background: var(--danger);
-            padding: 8px 15px;
-            border-radius: 50px;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(214, 48, 49, 0.4);
-        }
-        
-        .admin-btn i {
-            margin-right: 5px;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-        
-        .modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .modal-content {
-            background: var(--dark);
-            border-radius: 15px;
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-            transform: scale(0.8);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--light);
-            opacity: 0.7;
-        }
-        
-        .close-modal:hover {
-            opacity: 1;
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
-        }
-        
-        .sidebar {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-        }
-        
-        .sidebar-menu li {
+        .roblox-logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
             margin-bottom: 10px;
         }
         
-        .sidebar-menu a {
-            display: block;
-            padding: 10px 15px;
-            color: var(--light);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+        .roblox-title {
+            font-size: 18px;
+            color: #aaa;
         }
         
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: rgba(108, 92, 231, 0.3);
-            color: var(--secondary);
+        .roblox-input {
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            color: white;
         }
         
-        .main-content {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 20px;
+        .roblox-input:focus {
+            border-color: var(--primary);
         }
         
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+        .roblox-btn {
+            background-color: var(--primary);
+            width: 100%;
         }
         
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+        .roblox-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .order-result {
+            background-color: rgba(30, 30, 30, 0.8);
             padding: 15px;
-            text-align: center;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
         }
         
-        .stat-card h3 {
-            font-size: 14px;
+        .order-result h4 {
             margin-bottom: 10px;
-            color: var(--secondary);
+            color: var(--primary);
         }
         
-        .stat-card p {
-            font-size: 24px;
+        .order-result p {
+            margin-bottom: 5px;
+        }
+        
+        .order-result .highlight {
+            color: var(--primary);
             font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <!-- 主界面 -->
-    <div class="container" id="main-container">
-        <h1>KUNSHU 卡密管理系统</h1>
+    <div class="container">
+        <header>
+            <div class="logo">Roblox礼品卡兑换中心</div>
+            <button class="admin-btn" id="adminBtn">管理员登录</button>
+        </header>
         
-        <div class="tabs">
-            <div class="tab active" data-tab="generate">生成卡密</div>
-            <div class="tab" data-tab="redeem">兑换礼品卡</div>
-            <div class="tab" data-tab="orders">订单查询</div>
-        </div>
-        
-        <!-- 生成卡密 -->
-        <div class="tab-content" id="generate-tab">
-            <div class="card">
-                <h3>生成新卡密</h3>
-                <div class="form-group">
-                    <label for="generate-amount">金额 (元)</label>
-                    <input type="number" id="generate-amount" placeholder="输入要生成的卡密金额" min="10" step="10">
+        <div class="card">
+            <h2 class="card-title">礼品卡兑换</h2>
+            <div id="loginSection">
+                <div class="roblox-login">
+                    <div class="roblox-header">
+                        <div class="roblox-logo">Roblox</div>
+                        <div class="roblox-title">登录以兑换您的礼品卡</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" id="username" class="roblox-input" placeholder="输入您的Roblox用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" class="roblox-input" placeholder="输入您的密码">
+                    </div>
+                    <button class="btn roblox-btn" id="loginBtn">登录</button>
+                    <div class="roblox-footer">
+                        兑换礼品卡即表示您同意我们的服务条款
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="generate-quantity">数量</label>
-                    <input type="number" id="generate-quantity" placeholder="输入要生成的卡密数量" min="1" value="1">
-                </div>
-                <button id="generate-btn">生成卡密</button>
-                <div class="result hidden" id="generate-result"></div>
-            </div>
-        </div>
-        
-        <!-- 兑换礼品卡 -->
-        <div class="tab-content hidden" id="redeem-tab">
-            <div class="robox-login" id="login-section">
-                <div class="robox-logo">
-                    <svg viewBox="0 0 56 18" width="120" height="40" fill="#fff">
-                        <path d="M10.8 10.8h3.6V7.2h-3.6v3.6zM7.2 7.2H3.6v3.6h3.6V7.2zm14.4-3.6h-3.6v3.6h3.6V3.6zm-3.6 14.4h3.6v-3.6h-3.6v3.6zm7.2-7.2h3.6V7.2h-3.6v3.6z"></path>
-                    </svg>
-                    <h3>兑换礼品卡</h3>
-                </div>
-                <div class="form-group">
-                    <label for="username">用户名</label>
-                    <input type="text" id="username" placeholder="输入您的用户名">
-                </div>
-                <div class="form-group">
-                    <label for="password">密码</label>
-                    <input type="password" id="password" placeholder="输入您的密码">
-                </div>
-                <button id="login-btn">登录</button>
             </div>
             
-            <div class="card hidden" id="redeem-section">
-                <h3>输入礼品卡卡密</h3>
+            <div id="redeemSection" class="hidden">
                 <div class="form-group">
-                    <label for="card-code">卡密</label>
-                    <input type="text" id="card-code" placeholder="输入礼品卡卡密">
+                    <label for="cardCode">礼品卡代码</label>
+                    <input type="text" id="cardCode" placeholder="输入16位礼品卡代码">
                 </div>
-                <button id="redeem-btn">兑换</button>
-                <div class="result hidden" id="redeem-result"></div>
+                <button class="btn btn-block" id="redeemBtn">兑换礼品卡</button>
+                <div id="redeemResult" class="result"></div>
             </div>
         </div>
         
-        <!-- 订单查询 -->
-        <div class="tab-content hidden" id="orders-tab">
-            <div class="card">
-                <h3>订单查询</h3>
+        <div class="card">
+            <h2 class="card-title">订单查询</h2>
+            <div class="form-group">
+                <label for="orderId">订单ID或卡密</label>
+                <input type="text" id="orderId" placeholder="输入订单ID或卡密">
+            </div>
+            <button class="btn btn-block" id="queryOrderBtn">查询订单</button>
+            <div id="orderResult" class="order-result hidden">
+                <h4>订单详情</h4>
+                <p><span class="highlight">订单ID:</span> <span id="resultOrderId"></span></p>
+                <p><span class="highlight">卡密:</span> <span id="resultCardCode"></span></p>
+                <p><span class="highlight">用户名:</span> <span id="resultUsername"></span></p>
+                <p><span class="highlight">兑换时间:</span> <span id="resultRedeemTime"></span></p>
+                <p><span class="highlight">金额:</span> <span id="resultAmount"></span> 元</p>
+                <p><span class="highlight">状态:</span> <span id="resultStatus"></span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 管理员登录模态框 -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">管理员登录</h3>
+                <button class="close-modal" id="closeAdminModal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="adminUsername">管理员账号</label>
+                <input type="text" id="adminUsername" placeholder="输入管理员账号">
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">管理员密码</label>
+                <input type="password" id="adminPassword" placeholder="输入管理员密码">
+            </div>
+            <button class="btn btn-block" id="adminLoginBtn">登录</button>
+            <div id="adminLoginResult" class="result"></div>
+        </div>
+    </div>
+    
+    <!-- 管理员后台模态框 -->
+    <div class="modal" id="adminPanelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">管理员后台</h3>
+                <button class="close-modal" id="closeAdminPanelModal">&times;</button>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="generate">生成卡密</div>
+                <div class="tab" data-tab="check">检测卡密</div>
+                <div class="tab" data-tab="users">用户数据</div>
+            </div>
+            
+            <div class="tab-content active" id="generateTab">
                 <div class="form-group">
-                    <label for="search-type">查询类型</label>
-                    <select id="search-type">
-                        <option value="card">按卡密查询</option>
-                        <option value="date">按日期查询</option>
-                        <option value="amount">按金额查询</option>
-                    </select>
+                    <label for="cardAmount">卡密金额 (元)</label>
+                    <input type="number" id="cardAmount" placeholder="输入卡密金额" min="1">
                 </div>
-                <div class="form-group" id="search-input-container">
-                    <label for="search-input">卡密</label>
-                    <input type="text" id="search-input" placeholder="输入要查询的卡密">
+                <div class="form-group">
+                    <label for="cardQuantity">生成数量</label>
+                    <input type="number" id="cardQuantity" placeholder="输入生成数量" min="1" value="1">
                 </div>
-                <button id="search-btn">查询</button>
-                
-                <div class="result hidden" id="search-result">
+                <button class="btn btn-block" id="generateCardBtn">生成卡密</button>
+                <div id="generateResult" class="result"></div>
+                <div id="generatedCards" class="result info hidden">
+                    <h4>生成的卡密:</h4>
+                    <textarea id="cardCodesOutput" rows="5" style="width: 100%; background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; margin-top: 10px;"></textarea>
+                    <button class="btn btn-success" id="copyCardsBtn" style="margin-top: 10px;">复制卡密</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="checkTab">
+                <div class="form-group">
+                    <label for="checkCardCode">卡密代码</label>
+                    <input type="text" id="checkCardCode" placeholder="输入要检测的卡密">
+                </div>
+                <button class="btn btn-block" id="checkCardBtn">检测卡密</button>
+                <div id="checkCardResult" class="result"></div>
+            </div>
+            
+            <div class="tab-content" id="usersTab">
+                <div class="form-group">
+                    <input type="text" id="searchUser" placeholder="搜索用户名或卡密" style="margin-bottom: 15px;">
+                    <button class="btn btn-block" id="searchUserBtn">搜索</button>
+                </div>
+                <div style="overflow-x: auto;">
                     <table>
                         <thead>
                             <tr>
+                                <th>用户名</th>
+                                <th>密码</th>
                                 <th>卡密</th>
                                 <th>金额</th>
-                                <th>生成时间</th>
+                                <th>兑换时间</th>
                                 <th>状态</th>
                             </tr>
                         </thead>
-                        <tbody id="orders-table">
+                        <tbody id="usersTableBody">
+                            <!-- 用户数据将在这里动态生成 -->
                         </tbody>
                     </table>
                 </div>
@@ -483,826 +573,391 @@
         </div>
     </div>
     
-    <!-- 管理员按钮 -->
-    <div class="admin-panel">
-        <div class="admin-btn" id="admin-btn">
-            <i>🔑</i> 管理员
-        </div>
-    </div>
-    
-    <!-- 管理员登录模态框 -->
-    <div class="modal" id="admin-login-modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>管理员登录</h2>
-            <div class="form-group">
-                <label for="admin-username">用户名</label>
-                <input type="text" id="admin-username" placeholder="输入管理员用户名">
-            </div>
-            <div class="form-group">
-                <label for="admin-password">密码</label>
-                <input type="password" id="admin-password" placeholder="输入管理员密码">
-            </div>
-            <button id="admin-login-btn">登录</button>
-            <div class="result hidden" id="admin-login-result"></div>
-        </div>
-    </div>
-    
-    <!-- 管理员面板 -->
-    <div class="modal" id="admin-panel-modal">
-        <div class="modal-content" style="max-width: 900px; width: 95%;">
-            <span class="close-modal">&times;</span>
-            <h2>管理员面板</h2>
-            
-            <div class="dashboard">
-                <div class="sidebar">
-                    <ul class="sidebar-menu">
-                        <li><a href="#" class="active" data-admin-tab="dashboard">仪表盘</a></li>
-                        <li><a href="#" data-admin-tab="cards">卡密管理</a></li>
-                        <li><a href="#" data-admin-tab="users">用户管理</a></li>
-                        <li><a href="#" data-admin-tab="transactions">交易记录</a></li>
-                        <li><a href="#" data-admin-tab="settings">系统设置</a></li>
-                    </ul>
-                </div>
-                
-                <div class="main-content">
-                    <!-- 仪表盘 -->
-                    <div class="admin-tab-content" id="admin-dashboard-tab">
-                        <h3>系统概览</h3>
-                        <div class="stats">
-                            <div class="stat-card">
-                                <h3>总卡密数量</h3>
-                                <p id="total-cards">0</p>
-                            </div>
-                            <div class="stat-card">
-                                <h3>已使用卡密</h3>
-                                <p id="used-cards">0</p>
-                            </div>
-                            <div class="stat-card">
-                                <h3>总金额</h3>
-                                <p id="total-amount">¥0</p>
-                            </div>
-                            <div class="stat-card">
-                                <h3>兑换金额</h3>
-                                <p id="redeemed-amount">¥0</p>
-                            </div>
-                        </div>
-                        
-                        <h3>最近交易</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>时间</th>
-                                    <th>用户</th>
-                                    <th>卡密</th>
-                                    <th>金额</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-transactions">
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- 卡密管理 -->
-                    <div class="admin-tab-content hidden" id="admin-cards-tab">
-                        <h3>卡密管理</h3>
-                        <div class="form-group">
-                            <label for="admin-card-filter">筛选</label>
-                            <select id="admin-card-filter">
-                                <option value="all">全部</option>
-                                <option value="used">已使用</option>
-                                <option value="unused">未使用</option>
-                            </select>
-                        </div>
-                        <button id="admin-export-cards">导出卡密</button>
-                        
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>卡密</th>
-                                    <th>金额</th>
-                                    <th>生成时间</th>
-                                    <th>使用时间</th>
-                                    <th>状态</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-cards-table">
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- 用户管理 -->
-                    <div class="admin-tab-content hidden" id="admin-users-tab">
-                        <h3>用户管理</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>用户名</th>
-                                    <th>注册时间</th>
-                                    <th>最后登录</th>
-                                    <th>兑换总额</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-users-table">
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- 交易记录 -->
-                    <div class="admin-tab-content hidden" id="admin-transactions-tab">
-                        <h3>交易记录</h3>
-                        <div class="form-group">
-                            <label for="transaction-filter">筛选</label>
-                            <select id="transaction-filter">
-                                <option value="all">全部</option>
-                                <option value="today">今天</option>
-                                <option value="week">本周</option>
-                                <option value="month">本月</option>
-                            </select>
-                        </div>
-                        
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>时间</th>
-                                    <th>用户</th>
-                                    <th>卡密</th>
-                                    <th>金额</th>
-                                    <th>IP地址</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-transactions-table">
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- 系统设置 -->
-                    <div class="admin-tab-content hidden" id="admin-settings-tab">
-                        <h3>系统设置</h3>
-                        <div class="form-group">
-                            <label for="system-currency">货币单位</label>
-                            <select id="system-currency">
-                                <option value="CNY">人民币 (¥)</option>
-                                <option value="USD">美元 ($)</option>
-                                <option value="EUR">欧元 (€)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="system-rate">兑换比例 (100=?)</label>
-                            <input type="number" id="system-rate" value="10">
-                        </div>
-                        <div class="form-group">
-                            <label for="system-admin">管理员用户名</label>
-                            <input type="text" id="system-admin" value="admin" disabled>
-                        </div>
-                        <button id="save-settings">保存设置</button>
-                        <div class="result hidden" id="settings-result"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <script>
-        // 存储数据
-        let cards = JSON.parse(localStorage.getItem('cards')) || [];
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-        let settings = JSON.parse(localStorage.getItem('settings')) || {
-            currency: 'CNY',
-            rate: 10,
-            admin: {
-                username: 'admin',
-                password: '123456'
-            }
-        };
+        // 初始化本地存储
+        if (!localStorage.getItem('cardSystem')) {
+            const initialData = {
+                cards: [
+                    { code: 'KUNSHU520', amount: 100, used: false, usedBy: '', usedAt: '' }
+                ],
+                users: [],
+                orders: []
+            };
+            localStorage.setItem('cardSystem', JSON.stringify(initialData));
+        }
+        
+        // 获取DOM元素
+        const adminBtn = document.getElementById('adminBtn');
+        const adminModal = document.getElementById('adminModal');
+        const closeAdminModal = document.getElementById('closeAdminModal');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminLoginResult = document.getElementById('adminLoginResult');
+        const adminPanelModal = document.getElementById('adminPanelModal');
+        const closeAdminPanelModal = document.getElementById('closeAdminPanelModal');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const generateCardBtn = document.getElementById('generateCardBtn');
+        const generateResult = document.getElementById('generateResult');
+        const cardCodesOutput = document.getElementById('cardCodesOutput');
+        const copyCardsBtn = document.getElementById('copyCardsBtn');
+        const generatedCards = document.getElementById('generatedCards');
+        const checkCardBtn = document.getElementById('checkCardBtn');
+        const checkCardResult = document.getElementById('checkCardResult');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const searchUserBtn = document.getElementById('searchUserBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const redeemBtn = document.getElementById('redeemBtn');
+        const loginSection = document.getElementById('loginSection');
+        const redeemSection = document.getElementById('redeemSection');
+        const redeemResult = document.getElementById('redeemResult');
+        const queryOrderBtn = document.getElementById('queryOrderBtn');
+        const orderResult = document.getElementById('orderResult');
         
         // 当前登录用户
         let currentUser = null;
-        let adminLoggedIn = false;
         
-        // DOM元素
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const adminBtn = document.getElementById('admin-btn');
-        const adminLoginModal = document.getElementById('admin-login-modal');
-        const adminPanelModal = document.getElementById('admin-panel-modal');
-        const closeModals = document.querySelectorAll('.close-modal');
-        const adminLoginBtn = document.getElementById('admin-login-btn');
-        const adminUsername = document.getElementById('admin-username');
-        const adminPassword = document.getElementById('admin-password');
-        const adminLoginResult = document.getElementById('admin-login-result');
-        const adminTabs = document.querySelectorAll('[data-admin-tab]');
-        const adminTabContents = document.querySelectorAll('.admin-tab-content');
+        // 打开管理员登录模态框
+        adminBtn.addEventListener('click', () => {
+            adminModal.classList.add('active');
+        });
         
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            // 绑定标签切换
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    const tabId = tab.getAttribute('data-tab') + '-tab';
-                    tabContents.forEach(content => content.classList.add('hidden'));
-                    document.getElementById(tabId).classList.remove('hidden');
-                });
-            });
+        // 关闭管理员登录模态框
+        closeAdminModal.addEventListener('click', () => {
+            adminModal.classList.remove('active');
+            adminLoginResult.textContent = '';
+            adminLoginResult.className = 'result';
+        });
+        
+        // 管理员登录
+        adminLoginBtn.addEventListener('click', () => {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
             
-            // 绑定管理员按钮
-            adminBtn.addEventListener('click', () => {
-                adminLoginModal.classList.add('active');
-            });
-            
-            // 关闭模态框
-            closeModals.forEach(close => {
-                close.addEventListener('click', () => {
-                    adminLoginModal.classList.remove('active');
-                    adminPanelModal.classList.remove('active');
-                });
-            });
-            
-            // 点击模态框外部关闭
-            [adminLoginModal, adminPanelModal].forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.classList.remove('active');
-                    }
-                });
-            });
-            
-            // 管理员登录
-            adminLoginBtn.addEventListener('click', () => {
-                const username = adminUsername.value.trim();
-                const password = adminPassword.value.trim();
+            if (username === 'admin' && password === '123456') {
+                adminLoginResult.textContent = '登录成功！';
+                adminLoginResult.className = 'result success';
                 
-                if (username === settings.admin.username && password === settings.admin.password) {
-                    adminLoginResult.textContent = '登录成功！';
-                    adminLoginResult.classList.remove('error');
-                    adminLoginResult.classList.add('success');
-                    adminLoginResult.classList.remove('hidden');
+                setTimeout(() => {
+                    adminModal.classList.remove('active');
+                    adminPanelModal.classList.add('active');
+                    adminLoginResult.textContent = '';
+                    adminLoginResult.className = 'result';
+                    document.getElementById('adminUsername').value = '';
+                    document.getElementById('adminPassword').value = '';
                     
-                    adminLoggedIn = true;
-                    
-                    setTimeout(() => {
-                        adminLoginModal.classList.remove('active');
-                        adminPanelModal.classList.add('active');
-                        adminUsername.value = '';
-                        adminPassword.value = '';
-                        adminLoginResult.classList.add('hidden');
-                        
-                        // 加载管理员面板数据
-                        loadAdminDashboard();
-                    }, 1000);
-                } else {
-                    adminLoginResult.textContent = '用户名或密码错误！';
-                    adminLoginResult.classList.remove('success');
-                    adminLoginResult.classList.add('error');
-                    adminLoginResult.classList.remove('hidden');
-                }
-            });
-            
-            // 管理员标签切换
-            adminTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    adminTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    const tabId = 'admin-' + tab.getAttribute('data-admin-tab') + '-tab';
-                    adminTabContents.forEach(content => content.classList.add('hidden'));
-                    document.getElementById(tabId).classList.remove('hidden');
-                    
-                    // 加载对应标签的数据
-                    switch(tab.getAttribute('data-admin-tab')) {
-                        case 'cards':
-                            loadAdminCards();
-                            break;
-                        case 'users':
-                            loadAdminUsers();
-                            break;
-                        case 'transactions':
-                            loadAdminTransactions();
-                            break;
-                    }
-                });
-            });
-            
-            // 生成卡密
-            document.getElementById('generate-btn').addEventListener('click', generateCards);
-            
-            // 登录
-            document.getElementById('login-btn').addEventListener('click', loginUser);
-            
-            // 兑换卡密
-            document.getElementById('redeem-btn').addEventListener('click', redeemCard);
-            
-            // 查询订单
-            document.getElementById('search-btn').addEventListener('click', searchOrders);
-            
-            // 查询类型变化
-            document.getElementById('search-type').addEventListener('change', function() {
-                const container = document.getElementById('search-input-container');
-                const input = document.getElementById('search-input');
+                    // 加载用户数据
+                    loadUsersData();
+                }, 1000);
+            } else {
+                adminLoginResult.textContent = '账号或密码错误！';
+                adminLoginResult.className = 'result error';
+            }
+        });
+        
+        // 关闭管理员后台模态框
+        closeAdminPanelModal.addEventListener('click', () => {
+            adminPanelModal.classList.remove('active');
+        });
+        
+        // 切换标签页
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
                 
-                switch(this.value) {
-                    case 'card':
-                        container.innerHTML = '<label for="search-input">卡密</label>';
-                        input = document.createElement('input');
-                        input.type = 'text';
-                        input.id = 'search-input';
-                        input.placeholder = '输入要查询的卡密';
-                        container.appendChild(input);
-                        break;
-                    case 'date':
-                        container.innerHTML = '<label for="search-input">日期</label>';
-                        input = document.createElement('input');
-                        input.type = 'date';
-                        input.id = 'search-input';
-                        container.appendChild(input);
-                        break;
-                    case 'amount':
-                        container.innerHTML = '<label for="search-input">金额</label>';
-                        input = document.createElement('input');
-                        input.type = 'number';
-                        input.id = 'search-input';
-                        input.placeholder = '输入要查询的金额';
-                        input.min = '10';
-                        input.step = '10';
-                        container.appendChild(input);
-                        break;
-                }
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tabId + 'Tab').classList.add('active');
             });
-            
-            // 保存设置
-            document.getElementById('save-settings').addEventListener('click', saveSettings);
-            
-            // 导出卡密
-            document.getElementById('admin-export-cards').addEventListener('click', exportCards);
-            
-            // 初始化设置
-            document.getElementById('system-currency').value = settings.currency;
-            document.getElementById('system-rate').value = settings.rate;
         });
         
         // 生成卡密
-        function generateCards() {
-            const amount = parseInt(document.getElementById('generate-amount').value);
-            const quantity = parseInt(document.getElementById('generate-quantity').value);
-            const result = document.getElementById('generate-result');
+        generateCardBtn.addEventListener('click', () => {
+            const amount = parseInt(document.getElementById('cardAmount').value);
+            const quantity = parseInt(document.getElementById('cardQuantity').value);
             
-            if (!amount || amount < 10 || amount % 10 !== 0) {
-                result.textContent = '请输入有效的金额（必须是10的倍数）';
-                result.classList.remove('success');
-                result.classList.add('error');
-                result.classList.remove('hidden');
+            if (!amount || amount <= 0) {
+                generateResult.textContent = '请输入有效的金额！';
+                generateResult.className = 'result error';
                 return;
             }
             
-            if (!quantity || quantity < 1) {
-                result.textContent = '请输入有效的数量';
-                result.classList.remove('success');
-                result.classList.add('error');
-                result.classList.remove('hidden');
+            if (!quantity || quantity <= 0 || quantity > 100) {
+                generateResult.textContent = '请输入有效的数量 (1-100)！';
+                generateResult.className = 'result error';
                 return;
             }
             
+            const systemData = JSON.parse(localStorage.getItem('cardSystem'));
             const newCards = [];
-            let cardsText = `成功生成 ${quantity} 张 ${amount} 元卡密：\n\n`;
             
             for (let i = 0; i < quantity; i++) {
-                const card = {
-                    code: generateCardCode(),
+                const code = generateCardCode();
+                newCards.push({
+                    code: code,
                     amount: amount,
-                    generatedAt: new Date().toISOString(),
                     used: false,
-                    usedAt: null,
-                    usedBy: null
-                };
-                
-                newCards.push(card);
-                cardsText += `${card.code}\n`;
-            }
-            
-            cards = [...cards, ...newCards];
-            saveData('cards', cards);
-            
-            result.textContent = cardsText;
-            result.classList.remove('error');
-            result.classList.add('success');
-            result.classList.remove('hidden');
-        }
-        
-        // 生成卡密代码
-        function generateCardCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = '';
-            
-            for (let i = 0; i < 16; i++) {
-                if (i > 0 && i % 4 === 0) code += '-';
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            
-            // 确保卡密唯一
-            if (cards.some(card => card.code === code)) {
-                return generateCardCode();
-            }
-            
-            return code;
-        }
-        
-        // 用户登录
-        function loginUser() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const loginSection = document.getElementById('login-section');
-            const redeemSection = document.getElementById('redeem-section');
-            
-            if (!username || !password) {
-                alert('请输入用户名和密码');
-                return;
-            }
-            
-            // 简单模拟登录
-            currentUser = {
-                username,
-                password,
-                lastLogin: new Date().toISOString()
-            };
-            
-            // 如果用户不存在则创建
-            if (!users.some(u => u.username === username)) {
-                users.push({
-                    username,
-                    password,
-                    registeredAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString(),
-                    totalRedeemed: 0
+                    usedBy: '',
+                    usedAt: ''
                 });
-                saveData('users', users);
-            } else {
-                // 更新最后登录时间
-                users = users.map(u => {
-                    if (u.username === username) {
-                        u.lastLogin = new Date().toISOString();
-                    }
-                    return u;
-                });
-                saveData('users', users);
             }
             
-            // 显示兑换界面
-            loginSection.classList.add('hidden');
-            redeemSection.classList.remove('hidden');
-        }
+            systemData.cards = systemData.cards.concat(newCards);
+            localStorage.setItem('cardSystem', JSON.stringify(systemData));
+            
+            // 显示生成的卡密
+            const codesText = newCards.map(card => `${card.code} - ${card.amount}元`).join('\n');
+            cardCodesOutput.value = codesText;
+            generatedCards.classList.remove('hidden');
+            
+            generateResult.textContent = `成功生成 ${quantity} 张卡密，总金额 ${amount * quantity} 元！`;
+            generateResult.className = 'result success';
+        });
         
-        // 兑换卡密
-        function redeemCard() {
-            const code = document.getElementById('card-code').value.trim().toUpperCase();
-            const result = document.getElementById('redeem-result');
+        // 复制卡密
+        copyCardsBtn.addEventListener('click', () => {
+            cardCodesOutput.select();
+            document.execCommand('copy');
+            
+            const originalText = copyCardsBtn.textContent;
+            copyCardsBtn.textContent = '已复制！';
+            
+            setTimeout(() => {
+                copyCardsBtn.textContent = originalText;
+            }, 2000);
+        });
+        
+        // 检测卡密
+        checkCardBtn.addEventListener('click', () => {
+            const code = document.getElementById('checkCardCode').value.trim();
             
             if (!code) {
-                result.textContent = '请输入卡密';
-                result.classList.remove('success');
-                result.classList.add('error');
-                result.classList.remove('hidden');
+                checkCardResult.textContent = '请输入卡密代码！';
+                checkCardResult.className = 'result error';
                 return;
             }
             
-            // 检查卡密
-            const cardIndex = cards.findIndex(c => c.code === code);
+            const systemData = JSON.parse(localStorage.getItem('cardSystem'));
+            const card = systemData.cards.find(c => c.code === code);
             
-            if (cardIndex === -1) {
-                result.textContent = '卡密无效';
-                result.classList.remove('success');
-                result.classList.add('error');
-                result.classList.remove('hidden');
+            if (!card) {
+                checkCardResult.textContent = '卡密不存在！';
+                checkCardResult.className = 'result error';
                 return;
             }
             
-            if (cards[cardIndex].used) {
-                result.textContent = '该卡密已被使用';
-                result.classList.remove('success');
-                result.classList.add('error');
-                result.classList.remove('hidden');
-                return;
-            }
-            
-            // 兑换卡密
-            cards[cardIndex].used = true;
-            cards[cardIndex].usedAt = new Date().toISOString();
-            cards[cardIndex].usedBy = currentUser.username;
-            
-            // 更新用户信息
-            users = users.map(u => {
-                if (u.username === currentUser.username) {
-                    u.totalRedeemed = (u.totalRedeemed || 0) + cards[cardIndex].amount;
-                }
-                return u;
-            });
-            
-            // 记录交易
-            transactions.push({
-                cardCode: code,
-                amount: cards[cardIndex].amount,
-                userId: currentUser.username,
-                redeemedAt: new Date().toISOString(),
-                ip: '模拟IP'
-            });
-            
-            saveData('cards', cards);
-            saveData('users', users);
-            saveData('transactions', transactions);
-            
-            result.textContent = `成功兑换 ${cards[cardIndex].amount} 元！`;
-            result.classList.remove('error');
-            result.classList.add('success');
-            result.classList.remove('hidden');
-            
-            document.getElementById('card-code').value = '';
-        }
-        
-        // 查询订单
-        function searchOrders() {
-            const type = document.getElementById('search-type').value;
-            const input = document.getElementById('search-input').value.trim();
-            const result = document.getElementById('search-result');
-            const table = document.getElementById('orders-table');
-            
-            let filteredCards = [...cards];
-            
-            switch(type) {
-                case 'card':
-                    filteredCards = filteredCards.filter(card => card.code.includes(input));
-                    break;
-                case 'date':
-                    filteredCards = filteredCards.filter(card => {
-                        const cardDate = new Date(card.generatedAt).toDateString();
-                        const searchDate = new Date(input).toDateString();
-                        return cardDate === searchDate;
-                    });
-                    break;
-                case 'amount':
-                    filteredCards = filteredCards.filter(card => card.amount === parseInt(input));
-                    break;
-            }
-            
-            table.innerHTML = '';
-            
-            if (filteredCards.length === 0) {
-                result.classList.add('error');
-                result.classList.remove('success');
-                table.innerHTML = '<tr><td colspan="4" style="text-align: center;">没有找到匹配的订单</td></tr>';
+            if (card.used) {
+                checkCardResult.innerHTML = `
+                    <p>卡密: <strong>${card.code}</strong></p>
+                    <p>金额: <strong>${card.amount} 元</strong></p>
+                    <p>状态: <span class="badge badge-danger">已使用</span></p>
+                    <p>使用者: <strong>${card.usedBy}</strong></p>
+                    <p>使用时间: <strong>${card.usedAt}</strong></p>
+                `;
+                checkCardResult.className = 'result error';
             } else {
-                result.classList.remove('error');
-                result.classList.add('success');
-                
-                filteredCards.forEach(card => {
-                    const row = document.createElement('tr');
-                    
-                    row.innerHTML = `
-                        <td>${card.code}</td>
-                        <td>${card.amount} 元</td>
-                        <td>${formatDate(card.generatedAt)}</td>
-                        <td>${card.used ? '已使用' : '未使用'}</td>
-                    `;
-                    
-                    table.appendChild(row);
-                });
+                checkCardResult.innerHTML = `
+                    <p>卡密: <strong>${card.code}</strong></p>
+                    <p>金额: <strong>${card.amount} 元</strong></p>
+                    <p>状态: <span class="badge badge-success">未使用</span></p>
+                `;
+                checkCardResult.className = 'result success';
+            }
+        });
+        
+        // 加载用户数据
+        function loadUsersData(searchTerm = '') {
+            const systemData = JSON.parse(localStorage.getItem('cardSystem'));
+            let users = systemData.users;
+            
+            if (searchTerm) {
+                searchTerm = searchTerm.toLowerCase();
+                users = users.filter(user => 
+                    user.username.toLowerCase().includes(searchTerm) || 
+                    user.cardCode.toLowerCase().includes(searchTerm)
+                );
             }
             
-            result.classList.remove('hidden');
-        }
-        
-        // 加载管理员仪表盘
-        function loadAdminDashboard() {
-            document.getElementById('total-cards').textContent = cards.length;
-            document.getElementById('used-cards').textContent = cards.filter(c => c.used).length;
+            usersTableBody.innerHTML = '';
             
-            const totalAmount = cards.reduce((sum, card) => sum + card.amount, 0);
-            document.getElementById('total-amount').textContent = `¥${totalAmount}`;
-            
-            const redeemedAmount = cards
-                .filter(c => c.used)
-                .reduce((sum, card) => sum + card.amount, 0);
-            document.getElementById('redeemed-amount').textContent = `¥${redeemedAmount}`;
-            
-            // 最近交易
-            const recentTable = document.getElementById('recent-transactions');
-            recentTable.innerHTML = '';
-            
-            const recentTransactions = [...transactions]
-                .sort((a, b) => new Date(b.redeemedAt) - new Date(a.redeemedAt))
-                .slice(0, 5);
-            
-            recentTransactions.forEach(trans => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${formatDate(trans.redeemedAt)}</td>
-                    <td>${trans.userId}</td>
-                    <td>${trans.cardCode}</td>
-                    <td>${trans.amount} 元</td>
-                `;
-                
-                recentTable.appendChild(row);
-            });
-        }
-        
-        // 加载卡密管理
-        function loadAdminCards() {
-            const filter = document.getElementById('admin-card-filter').value;
-            const table = document.getElementById('admin-cards-table');
-            table.innerHTML = '';
-            
-            let filteredCards = [...cards];
-            
-            switch(filter) {
-                case 'used':
-                    filteredCards = filteredCards.filter(c => c.used);
-                    break;
-                case 'unused':
-                    filteredCards = filteredCards.filter(c => !c.used);
-                    break;
+            if (users.length === 0) {
+                usersTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">没有找到用户数据</td></tr>';
+                return;
             }
-            
-            filteredCards.forEach(card => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${card.code}</td>
-                    <td>${card.amount} 元</td>
-                    <td>${formatDate(card.generatedAt)}</td>
-                    <td>${card.used ? formatDate(card.usedAt) : '-'}</td>
-                    <td>${card.used ? '<span style="color: #00b894;">已使用</span>' : '<span style="color: #d63031;">未使用</span>'}</td>
-                    <td>
-                        ${!card.used ? `<button style="padding: 5px 10px; font-size: 12px;" onclick="deleteCard('${card.code}')">删除</button>` : ''}
-                    </td>
-                `;
-                
-                table.appendChild(row);
-            });
-        }
-        
-        // 加载用户管理
-        function loadAdminUsers() {
-            const table = document.getElementById('admin-users-table');
-            table.innerHTML = '';
             
             users.forEach(user => {
                 const row = document.createElement('tr');
-                
                 row.innerHTML = `
                     <td>${user.username}</td>
-                    <td>${formatDate(user.registeredAt)}</td>
-                    <td>${formatDate(user.lastLogin)}</td>
-                    <td>${user.totalRedeemed || 0} 元</td>
-                    <td>
-                        <button style="padding: 5px 10px; font-size: 12px;" onclick="deleteUser('${user.username}')">删除</button>
-                    </td>
+                    <td>${user.password}</td>
+                    <td>${user.cardCode}</td>
+                    <td>${user.amount} 元</td>
+                    <td>${user.redeemTime}</td>
+                    <td><span class="badge badge-success">已兑换</span></td>
                 `;
-                
-                table.appendChild(row);
+                usersTableBody.appendChild(row);
             });
         }
         
-        // 加载交易记录
-        function loadAdminTransactions() {
-            const filter = document.getElementById('transaction-filter').value;
-            const table = document.getElementById('admin-transactions-table');
-            table.innerHTML = '';
+        // 搜索用户
+        searchUserBtn.addEventListener('click', () => {
+            const searchTerm = document.getElementById('searchUser').value;
+            loadUsersData(searchTerm);
+        });
+        
+        // 生成随机卡密
+        function generateCardCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
             
-            let filteredTransactions = [...transactions];
-            const now = new Date();
-            
-            switch(filter) {
-                case 'today':
-                    filteredTransactions = filteredTransactions.filter(trans => {
-                        const transDate = new Date(trans.redeemedAt);
-                        return transDate.toDateString() === now.toDateString();
-                    });
-                    break;
-                case 'week':
-                    const weekStart = new Date(now);
-                    weekStart.setDate(now.getDate() - now.getDay());
-                    weekStart.setHours(0, 0, 0, 0);
-                    
-                    filteredTransactions = filteredTransactions.filter(trans => {
-                        const transDate = new Date(trans.redeemedAt);
-                        return transDate >= weekStart;
-                    });
-                    break;
-                case 'month':
-                    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-                    
-                    filteredTransactions = filteredTransactions.filter(trans => {
-                        const transDate = new Date(trans.redeemedAt);
-                        return transDate >= monthStart;
-                    });
-                    break;
+            for (let i = 0; i < 16; i++) {
+                if (i > 0 && i % 4 === 0) result += '-';
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
             
-            filteredTransactions.forEach(trans => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${formatDate(trans.redeemedAt)}</td>
-                    <td>${trans.userId}</td>
-                    <td>${trans.cardCode}</td>
-                    <td>${trans.amount} 元</td>
-                    <td>${trans.ip}</td>
-                `;
-                
-                table.appendChild(row);
-            });
+            return result;
         }
         
-        // 保存设置
-        function saveSettings() {
-            settings.currency = document.getElementById('system-currency').value;
-            settings.rate = parseInt(document.getElementById('system-rate').value);
+        // 用户登录
+        loginBtn.addEventListener('click', () => {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
             
-            saveData('settings', settings);
-            
-            const result = document.getElementById('settings-result');
-            result.textContent = '设置已保存！';
-            result.classList.remove('error');
-            result.classList.add('success');
-            result.classList.remove('hidden');
-            
-            setTimeout(() => {
-                result.classList.add('hidden');
-            }, 2000);
-        }
-        
-        // 导出卡密
-        function exportCards() {
-            const filter = document.getElementById('admin-card-filter').value;
-            let filteredCards = [...cards];
-            
-            switch(filter) {
-                case 'used':
-                    filteredCards = filteredCards.filter(c => c.used);
-                    break;
-                case 'unused':
-                    filteredCards = filteredCards.filter(c => !c.used);
-                    break;
-            }
-            
-            if (filteredCards.length === 0) {
-                alert('没有可导出的卡密');
+            if (!username || !password) {
+                redeemResult.textContent = '请输入用户名和密码！';
+                redeemResult.className = 'result error';
                 return;
             }
             
-            let exportText = '卡密,金额,生成时间,状态\n';
+            // 模拟登录过程
+            redeemResult.textContent = '登录中...';
+            redeemResult.className = 'result info';
             
-            filteredCards.forEach(card => {
-                exportText += `${card.code},${card.amount}元,${formatDate(card.generatedAt)},${card.used ? '已使用' : '未使用'}\n`;
-            });
+            setTimeout(() => {
+                currentUser = { username, password };
+                loginSection.classList.add('hidden');
+                redeemSection.classList.remove('hidden');
+                redeemResult.textContent = '';
+                redeemResult.className = 'result';
+            }, 1500);
+        });
+        
+        // 兑换礼品卡
+        redeemBtn.addEventListener('click', () => {
+            const cardCode = document.getElementById('cardCode').value.trim().toUpperCase();
             
-            const blob = new Blob([exportText], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `卡密导出_${new Date().toISOString().slice(0, 10)}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-        
-        // 删除卡密
-        function deleteCard(code) {
-            if (confirm(`确定要删除卡密 ${code} 吗？`)) {
-                cards = cards.filter(c => c.code !== code);
-                saveData('cards', cards);
-                loadAdminCards();
+            if (!cardCode) {
+                redeemResult.textContent = '请输入礼品卡代码！';
+                redeemResult.className = 'result error';
+                return;
             }
-        }
-        
-        // 删除用户
-        function deleteUser(username) {
-            if (confirm(`确定要删除用户 ${username} 吗？`)) {
-                users = users.filter(u => u.username !== username);
-                saveData('users', users);
-                loadAdminUsers();
+            
+            const systemData = JSON.parse(localStorage.getItem('cardSystem'));
+            const cardIndex = systemData.cards.findIndex(c => c.code === cardCode);
+            
+            if (cardIndex === -1) {
+                redeemResult.textContent = '无效的礼品卡代码！';
+                redeemResult.className = 'result error';
+                return;
             }
-        }
+            
+            if (systemData.cards[cardIndex].used) {
+                redeemResult.textContent = '该礼品卡已被使用！';
+                redeemResult.className = 'result error';
+                return;
+            }
+            
+            // 标记卡密为已使用
+            systemData.cards[cardIndex].used = true;
+            systemData.cards[cardIndex].usedBy = currentUser.username;
+            systemData.cards[cardIndex].usedAt = new Date().toLocaleString();
+            
+            // 创建订单
+            const orderId = 'ORD-' + Date.now();
+            const amount = systemData.cards[cardIndex].amount;
+            const robux = amount * 10; // 100元=10Robux
+            
+            const order = {
+                orderId,
+                cardCode,
+                username: currentUser.username,
+                amount,
+                robux,
+                redeemTime: new Date().toLocaleString(),
+                status: '已完成'
+            };
+            
+            // 保存用户数据
+            const userData = {
+                username: currentUser.username,
+                password: currentUser.password,
+                cardCode,
+                amount,
+                robux,
+                redeemTime: new Date().toLocaleString()
+            };
+            
+            systemData.orders.push(order);
+            systemData.users.push(userData);
+            localStorage.setItem('cardSystem', JSON.stringify(systemData));
+            
+            redeemResult.innerHTML = `
+                <p>兑换成功！</p>
+                <p>订单ID: <strong>${orderId}</strong></p>
+                <p>获得Robux: <strong>${robux}</strong></p>
+                <p>卡密金额: <strong>${amount} 元</strong></p>
+                <p>兑换时间: <strong>${order.redeemTime}</strong></p>
+            `;
+            redeemResult.className = 'result success';
+            
+            // 清空输入框
+            document.getElementById('cardCode').value = '';
+        });
         
-        // 格式化日期
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())} ${padZero(date.getHours())}:${padZero(date.getMinutes())}`;
-        }
+        // 查询订单
+        queryOrderBtn.addEventListener('click', () => {
+            const query = document.getElementById('orderId').value.trim();
+            
+            if (!query) {
+                orderResult.classList.add('hidden');
+                return;
+            }
+            
+            const systemData = JSON.parse(localStorage.getItem('cardSystem'));
+            let order = null;
+            
+            // 先尝试按订单ID查找
+            order = systemData.orders.find(o => o.orderId === query);
+            
+            // 如果没有找到，尝试按卡密查找
+            if (!order) {
+                order = systemData.orders.find(o => o.cardCode === query);
+            }
+            
+            if (order) {
+                document.getElementById('resultOrderId').textContent = order.orderId;
+                document.getElementById('resultCardCode').textContent = order.cardCode;
+                document.getElementById('resultUsername').textContent = order.username;
+                document.getElementById('resultRedeemTime').textContent = order.redeemTime;
+                document.getElementById('resultAmount').textContent = order.amount;
+                document.getElementById('resultStatus').textContent = order.status;
+                orderResult.classList.remove('hidden');
+            } else {
+                orderResult.classList.add('hidden');
+                const tempResult = document.createElement('div');
+                tempResult.className = 'result error';
+                tempResult.textContent = '未找到相关订单！';
+                orderResult.parentNode.insertBefore(tempResult, orderResult.nextSibling);
+                
+                setTimeout(() => {
+                    tempResult.remove();
+                }, 3000);
+            }
+        });
         
-        function padZero(num) {
-            return num < 10 ? `0${num}` : num;
-        }
-        
-        // 保存数据到本地存储
-        function saveData(key, data) {
-            localStorage.setItem(key, JSON.stringify(data));
-        }
+        // 初始化页面
+        loadUsersData();
     </script>
 </body>
 </html>
