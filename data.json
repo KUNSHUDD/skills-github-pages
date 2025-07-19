@@ -1,0 +1,12 @@
+{
+    "admin": {
+        "username": "admin",
+        "password": "123456",
+        "cardkey": "KUNSHU520"
+    },
+    "backendPassword": "123456",
+    "cards": [],
+    "orders": [],
+    "users": [],
+    "redeemedCards": []
+}
