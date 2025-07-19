@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUNSHU 后台管理</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="particles" id="particles-js"></div>
+        <div class="card">
+            <h1 class="logo">KUNSHU 后台管理</h1>
+            <p class="tagline">系统数据监控中心</p>
+            
+            <div id="password-section">
+                <form id="backend-login-form">
+                    <div class="form-group">
+                        <label for="backend-password">后台密码</label>
+                        <input type="password" id="backend-password" placeholder="输入后台密码" required>
+                    </div>
+                    <button type="submit" class="btn">验证</button>
+                </form>
+            </div>
+            
+            <div id="backend-content" style="display:none;">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="openTab('users')">用户数据</button>
+                    <button class="tab-btn" onclick="openTab('cards')">卡密数据</button>
+                    <button class="tab-btn" onclick="openTab('stats')">系统统计</button>
+                </div>
+                
+                <div id="users" class="tab-content active">
+                    <div class="search-box">
+                        <input type="text" id="search-user" placeholder="搜索用户名">
+                        <button onclick="searchUsers()" class="btn">搜索</button>
+                    </div>
+                    <div id="users-list" class="result-box"></div>
+                </div>
+                
+                <div id="cards" class="tab-content">
+                    <div class="search-box">
+                        <input type="text" id="search-card" placeholder="搜索卡密">
+                        <button onclick="searchCards()" class="btn">搜索</button>
+                    </div>
+                    <div id="cards-list" class="result-box"></div>
+                </div>
+                
+                <div id="stats" class="tab-content">
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <h3>总用户数</h3>
+                            <p id="total-users">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>总卡密数</h3>
+                            <p id="total-cards">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>已兑换金额</h3>
+                            <p id="total-redeemed">0 元</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
